@@ -20,6 +20,8 @@ func main() {
 		panic(err)
 	}
 
+	key := *key_ptr
+
 	br := bufio.NewReader(file)
 
 	var new_bits []byte
@@ -32,15 +34,16 @@ func main() {
 		}
 		
 		if (*dec_ptr) {
-			append(new_bits, b - ind)
-			ind = (ind + 1) % len(*key_ptr)
+			new_bits = append(new_bits, b - key[ind])
+			ind = (ind + 1) % len(key)
 		} else {
-			append(new_bits, b + ind)
-			ind = (ind + 1) % len(*key_ptr)
+			new_bits = append(new_bits, b + key[ind])
+			ind = (ind + 1) % len(key)
 		}
 	}
 	
-	os.WriteFile("test_out.txt", new_bits, 0644)
+	fmt.Println(new_bits)
+	// os.WriteFile("test_out.txt", new_bits, 0644)
 	
-	file.close()
+	file.Close()
 }
