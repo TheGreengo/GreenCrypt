@@ -23,6 +23,7 @@ func main() {
 	br := bufio.NewReader(file)
 
 	var new_bits []byte
+	ind := 0
 	for {
 		b, err := br.ReadByte() 
 		
@@ -30,11 +31,16 @@ func main() {
 			break
 		}
 		
-		append(new_bits, b + ind)
-		ind = (ind + 1) % len(*key_ptr)
-		fmt.Printf("%c", b)
-		fmt.Printf("%d", b + ind)
+		if (*dec_ptr) {
+			append(new_bits, b - ind)
+			ind = (ind + 1) % len(*key_ptr)
+		} else {
+			append(new_bits, b + ind)
+			ind = (ind + 1) % len(*key_ptr)
+		}
 	}
 	
-	os.WriteFile(*file_ptr, new_bits, 0644)
+	os.WriteFile("test_out.txt", new_bits, 0644)
+	
+	file.close()
 }
