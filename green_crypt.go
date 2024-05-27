@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"flag"
 	"os"
 	"bufio"
@@ -19,12 +18,13 @@ func main() {
 	if (err != nil) {
 		panic(err)
 	}
-
+	
 	key := *key_ptr
 
 	br := bufio.NewReader(file)
 
 	var new_bits []byte
+	var old_bits []byte
 	ind := 0
 	for {
 		b, err := br.ReadByte() 
@@ -35,15 +35,16 @@ func main() {
 		
 		if (*dec_ptr) {
 			new_bits = append(new_bits, b - key[ind])
+			old_bits = append(old_bits, b)
 			ind = (ind + 1) % len(key)
 		} else {
 			new_bits = append(new_bits, b + key[ind])
+			old_bits = append(old_bits, b)
 			ind = (ind + 1) % len(key)
 		}
 	}
 	
-	fmt.Println(new_bits)
-	// os.WriteFile("test_out.txt", new_bits, 0644)
+	os.WriteFile("test_out.txt", new_bits, 0644)
 	
 	file.Close()
 }
