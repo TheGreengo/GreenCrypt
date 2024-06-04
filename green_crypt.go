@@ -8,11 +8,16 @@ import (
 
 func main() {
 	file_ptr := flag.String("f","", "The name of the file to be encrypted")
+	out_ptr := flag.String("o","", "The name of the output file to be made")
 	dec_ptr := flag.Bool("d", false, `Flag to indicate if flag is being decrypted
 	 default (false) means that file is to be encrypted`)	
 	key_ptr := flag.String("k", "secret", "The key to be used to encrypt the file")
 
 	flag.Parse()
+
+    if (*out_ptr == "") {
+        out_ptr = file_ptr
+    }
 
 	file, err := os.Open(*file_ptr)
 	if (err != nil) {
@@ -44,7 +49,7 @@ func main() {
 		}
 	}
 	
-	os.WriteFile("test_out.txt", new_bits, 0644)
+	os.WriteFile(*out_ptr, new_bits, 0644)
 	
 	file.Close()
 }
