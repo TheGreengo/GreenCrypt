@@ -11,6 +11,7 @@ func main() {
 	dec_ptr := flag.Bool("d", false, `Flag to indicate if flag is being decrypted
 	 default (false) means that file is to be encrypted`)	
 	key_ptr := flag.String("k", "secret", "The key to be used to encrypt the file")
+    chunk_ptr := flag.Int("c", 10000, "The chunk size used when encrypting/decrypting")
 
 	flag.Parse()
 
@@ -36,7 +37,7 @@ func main() {
 	
     key := *key_ptr
 
-    bits := make([]byte,10000)
+    bits := make([]byte,*chunk_ptr)
 	ind := 0
 	for {
 		n, err := file.Read(bits) 
