@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"os"
-	"bufio"
 )
 
 func main() {
@@ -15,41 +14,53 @@ func main() {
 
 	flag.Parse()
 
+    out_match := false
     if (*out_ptr == "") {
-        out_ptr = file_ptr
+        temp := *file_ptr
+        out_ptr = &temp
+        *out_ptr += ".temp"
+        out_match = true
     }
 
 	file, err := os.Open(*file_ptr)
 	if (err != nil) {
 		panic(err)
 	}
+    
+    f2, errr := os.Create(*out_ptr) 
+	if (errr != nil) {
+		panic(errr)
+	}
 	
-	key := *key_ptr
+    defer f2.Close()
+	
+    key := *key_ptr
 
-	br := bufio.NewReader(file)
-
-	var new_bits []byte
-	var old_bits []byte
+    bits := make([]byte,10000)
 	ind := 0
 	for {
-		b, err := br.ReadByte() 
+		n, err := file.Read(bits) 
 		
 		if (err != nil) {
 			break
 		}
 		
-		if (*dec_ptr) {
-			new_bits = append(new_bits, b - key[ind])
-			old_bits = append(old_bits, b)
-			ind = (ind + 1) % len(key)
-		} else {
-			new_bits = append(new_bits, b + key[ind])
-			old_bits = append(old_bits, b)
-			ind = (ind + 1) % len(key)
-		}
+        for i := 0; i < n; i++ {
+		    if (*dec_ptr) {
+			    bits[i] = bits[i] - key[ind]
+		    } else {
+			    bits[i] = bits[i] + key[ind]
+		    }
+		    ind = (ind + 1) % len(key)
+        }
+
+        f2.Write(bits[:n])
 	}
 	
-	os.WriteFile(*out_ptr, new_bits, 0644)
+    if (out_match) {
+        os.Remove(*file_ptr)
+        os.Rename(*out_ptr, *file_ptr)
+    }
 	
 	file.Close()
 }
